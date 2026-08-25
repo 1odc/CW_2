@@ -1,0 +1,6 @@
+@CW_2_HostAddress = http://localhost:5264
+
+GET {{CW_2_HostAddress}}api/product
+Accept: application/json
+
+###
