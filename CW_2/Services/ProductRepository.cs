@@ -6,14 +6,31 @@ namespace CW_2.Services
     {
         private readonly List<Product> _productsList = new()
         {
-            new Product { Id = 1, Name = "Миша ", Category = "Аксесуари", Price = 699m, Brand = "Logitech" },
-            new Product { Id = 2, Name = "Клавіатура", Category = "Аксесуари", Price = 799m, Brand = "Logitech" },
+            new Product { Id = 1, Name = "Миша ", Category = "Аксесуари", Price = 799m, Brand = "Logitech" },
+            new Product { Id = 2, Name = "Алавіатура", Category = "Аксесуари", Price = 699m, Brand = "Logitech" },
             new Product { Id = 3, Name = "Монітор 27\"", Category = "Периферія", Price = 6999m, Brand = "Razor", InStock = false }
         };
-        public IReadOnlyCollection<Product> GetAll()
+        private static int _nextId = 4;
+        public List<Product> GetAll(string? category, decimal? minprice, string? sortBy)
         {
-            return _productsList;
+            IEnumerable<Product> result = _productsList;
+            if (!string.IsNullOrEmpty(category))
+            {
+                result = result.Where(p => p.Category.Equals(category, StringComparison.OrdinalIgnoreCase));
+            }
+            if (minprice.HasValue)
+            {
+                result = result.Where(p => p.Price >= minprice.Value);
+            }
+            result = sortBy?.ToLower() switch
+            {
+                "price" => result.OrderBy(p => p.Price),
+                "name" => result.OrderBy(p => p.Name),
+                _ => result
+            };
+            return result.ToList();
         }
+
         public int GetCount()
         {
             return _productsList.Count;
@@ -52,6 +69,30 @@ namespace CW_2.Services
         public List<Product>? GetMoreExpensive(decimal minPrice)
         {
             return _productsList.Where(p => p.Price > minPrice).ToList();
+        }
+        public void Add(Product product)
+        {
+            product.Id = _nextId++;
+            _productsList.Add(product);
+        }
+        public bool Update(int id, CreateProductRequest product)
+        {
+            Product? existing = GetById(id);
+            if(existing == null)
+            {
+                return false;
+            }
+            existing.Name = product.Name;
+            existing.Category = product.Category;
+            existing.Price = product.Price;
+            existing.Brand = product.Brand;
+            existing.InStock = product.InStock;
+            return true;
+        }
+
+        public List<Product> GetByPriceRange(decimal min, decimal max)
+        {
+            return _productsList.Where(p => p.Price >= min && p.Price <= max).ToList();
         }
     }
 

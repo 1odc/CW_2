@@ -1,6 +1,31 @@
 @CW_2_HostAddress = http://localhost:5264
 
-GET {{CW_2_HostAddress}}api/product
+GET {{CW_2_HostAddress}}/product/
 Accept: application/json
-
 ###
+
+POST {{CW_2_HostAddress}}/product/
+Accept: application/json
+Content-Type: application/json
+{
+  "name": "Новий продукт",
+  "category": "Електроніка",
+  "price": 1000.00,
+  "brand": "Samsung",
+  "inStock": true
+}
+###
+PUT {{CW_2_HostAddress}}/product/1
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Оновлений продукт",
+  "category": "Електроніка",
+  "price": 1200.00,
+  "brand": "Samsung",
+  "inStock": false
+}
+###
+
+

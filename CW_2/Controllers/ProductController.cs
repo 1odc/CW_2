@@ -16,9 +16,12 @@ namespace CW_2.Controllers
 
         [HttpGet]
 
-        public ActionResult<IReadOnlyCollection<Product>> GetAll()
+        public ActionResult<IReadOnlyCollection<Product>> GetAll(
+            [FromQuery] string? category,
+            [FromQuery] decimal? minprice,
+            [FromQuery] string? sortBy)
         {
-            return Ok(_productService.GetAll());
+            return Ok(_productService.GetAll(category, minprice, sortBy));
         }
         [HttpGet("{id}")]
         public ActionResult<Product> GetById(int id) {
@@ -29,5 +32,41 @@ namespace CW_2.Controllers
         {
             return Ok(_productService.GetCount());
         }
+        [HttpGet("in-stock")]
+        public ActionResult<int> GetInStock()
+        {
+            return Ok(_productService.GetInStock());
+        }
+        [HttpGet("brand/{brand}")]
+        public ActionResult<int> GetBrand(string brand)
+        {
+            return Ok(_productService.GetBrand(brand));
+        }
+        [HttpGet("price-range/{min:decimal}/{max:decimal}")]
+        public ActionResult<List<Product>> GetByPriceRange(decimal min, decimal max)
+        {
+            return Ok(_productService.GetByPriceRange(min, max));
+        }
+        [HttpPost]
+        public ActionResult<Product> CreateProduct([FromBody] CreateProductRequest request)
+        {
+            var product = new Product
+            {
+                Name = request.Name,
+                Category = request.Category,
+                Price = request.Price,
+                Brand = request.Brand,
+                InStock = request.InStock
+            };
+            _productService.Add(product);
+            return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
+        }
+        [HttpPut("{id}")]
+        public ActionResult UpdateProduct(int id, [FromBody] CreateProductRequest product)
+        {
+            bool success = _productService.Update(id, product);
+            return success ? NoContent() : NotFound();
+        }
+
     }
 }
