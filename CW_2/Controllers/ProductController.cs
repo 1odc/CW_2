@@ -21,26 +21,7 @@ namespace CW_2.Controllers
             [FromQuery] decimal? minPrice,
             [FromQuery] string? sortBy)
         {
-            IEnumerable<Product> result = _productService.GetAll();
-
-            if (!string.IsNullOrEmpty(category))
-            {
-                result = result.Where(p => p.Category.Equals(category, StringComparison.OrdinalIgnoreCase));
-            }
-
-            if (minPrice.HasValue)
-            {
-                result = result.Where(p => p.Price >= minPrice.Value);
-            }
-
-            result = sortBy?.ToLower() switch
-            {
-                "price" => result.OrderBy(p => p.Price),
-                "name" => result.OrderBy(p => p.Name),
-                _ => result
-            };
-
-            return Ok(result.ToList());
+            return Ok(_productService.GetAll(category, minPrice, sortBy));
         }
         [HttpGet("{id:int}")]
         public ActionResult<Product> GetById(int id) {

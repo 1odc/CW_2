@@ -11,9 +11,28 @@ namespace CW_2.Services
             new Product { Id = 3, Name = "Монітор 27\"", Category = "Периферія", Price = 6999m, Brand = "Razor", InStock = false }
         };
         private static int _nextId = 4;
-        public List<Product> GetAll()
+        public IReadOnlyCollection<Product> GetAll(string? category = null, decimal? minPrice = null, string? sortBy = null)
         {
-            return _productsList;
+            IEnumerable<Product> result = _productsList;
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                result = result.Where(p => p.Category.Equals(category, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (minPrice.HasValue)
+            {
+                result = result.Where(p => p.Price >= minPrice.Value);
+            }
+
+            result = sortBy?.ToLower() switch
+            {
+                "price" => result.OrderBy(p => p.Price),
+                "name" => result.OrderBy(p => p.Name),
+                _ => result
+            };
+
+            return result.ToList();
         }
 
         public int GetCount()
