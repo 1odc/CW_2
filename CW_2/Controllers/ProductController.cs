@@ -18,12 +18,31 @@ namespace CW_2.Controllers
 
         public ActionResult<IReadOnlyCollection<Product>> GetAll(
             [FromQuery] string? category,
-            [FromQuery] decimal? minprice,
+            [FromQuery] decimal? minPrice,
             [FromQuery] string? sortBy)
         {
-            return Ok(_productService.GetAll(category, minprice, sortBy));
+            IEnumerable<Product> result = _productService.GetAll();
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                result = result.Where(p => p.Category.Equals(category, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (minPrice.HasValue)
+            {
+                result = result.Where(p => p.Price >= minPrice.Value);
+            }
+
+            result = sortBy?.ToLower() switch
+            {
+                "price" => result.OrderBy(p => p.Price),
+                "name" => result.OrderBy(p => p.Name),
+                _ => result
+            };
+
+            return Ok(result.ToList());
         }
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public ActionResult<Product> GetById(int id) {
             return _productService.GetById(id) == null ? NotFound() : Ok(_productService.GetById(id));
         }
