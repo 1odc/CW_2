@@ -1,35 +1,5 @@
-@CW_2_HostAddress = http://localhost:5264
+@CW_2_HostAddress = http://localhost:5264/api
 
-GET {{CW_2_HostAddress}}api/product
-Accept: application/json
-###
-GET {{CW_2_HostAddress}}api/product?category=Електроніка
-Accept: application/json
-###
-GET {{CW_2_HostAddress}}/product?category=Периферія
-Accept: application/json
-###
-GET {{CW_2_HostAddress}}/product?sortBy=price
-Accept: application/json
-###
-GET {{CW_2_HostAddress}}/product?sortBy=name
-Accept: application/json
-###
-GET {{CW_2_HostAddress}}/product/1
-Accept: application/json
-###
-GET {{CW_2_HostAddress}}/product/count
-Accept: application/json
-###
-GET {{CW_2_HostAddress}}/product/in-stock
-Accept: application/json
-###
-GET {{CW_2_HostAddress}}/product/brand/Logitech
-Accept: application/json
-###
-GET {{CW_2_HostAddress}}/product/
-Accept: application/json
-###
 GET {{CW_2_HostAddress}}/product/
 Accept: application/json
 ###
@@ -51,10 +21,15 @@ Content-Type: application/json
 {
   "name": "Оновлений продукт",
   "category": "Електроніка",
-  "price": 1200.00,
+  "price": 1700.00,
   "brand": "Samsung",
   "inStock": false
 }
 ###
 
-
+POST {{CW_2_HostAddress}}/product/
+Accept: application/json
+Content-Type: application/json
+{
+}
+###

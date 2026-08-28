@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CW_2.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ProductController : ControllerBase
     {
         private readonly ProductService _productService;
@@ -33,12 +33,12 @@ namespace CW_2.Controllers
             return Ok(_productService.GetCount());
         }
         [HttpGet("in-stock")]
-        public ActionResult<int> GetInStock()
+        public ActionResult<List<Product>> GetInStock()
         {
             return Ok(_productService.GetInStock());
         }
         [HttpGet("brand/{brand}")]
-        public ActionResult<int> GetBrand(string brand)
+        public ActionResult<List<Product>> GetBrand(string brand)
         {
             return Ok(_productService.GetBrand(brand));
         }
@@ -61,7 +61,7 @@ namespace CW_2.Controllers
             _productService.Add(product);
             return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
         }
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public ActionResult UpdateProduct(int id, [FromBody] CreateProductRequest product)
         {
             bool success = _productService.Update(id, product);
