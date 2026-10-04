@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using CW_2.Middleware;
 using CW_2.Models;
 using CW_2.Services;
 using Scalar.AspNetCore;
@@ -9,15 +10,53 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddSingleton<ProductService>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi("v1", options =>
+{
+    // Document transformer — місце, де можна дописати метадані, яких немає
+    // в самому коді контролерів: назву, опис, версію всього документа.
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Info.Title = "ProductCatalog API";
+        document.Info.Version = "v1";
+        document.Info.Description =
+            "Базова версія API каталогу товарів. Список товарів повертається " +
+            "як звичайний масив JSON.";
+        return Task.CompletedTask;
+    });
 
+    // У документ "v1" включаємо лише дії з GroupName == "v1" (або взагалі без
+    // групи — це стосується службових дій фреймворку, яких у нас немає, але
+    // так безпечніше на випадок майбутніх змін).
+    options.ShouldInclude = apiDescription => apiDescription.GroupName is null or "v1";
+});
+builder.Services.AddOpenApi("v2", options =>
+{
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Info.Title = "ProductCatalog API";
+        document.Info.Version = "v2";
+        document.Info.Description =
+            "Друга версія API. Головна відмінність від v1: список товарів тепер " +
+            "обгорнутий в об'єкт з полями 'data' і 'count', а кожен товар додатково " +
+            "містить discountPercent. Так навмисно показано, навіщо потрібне " +
+            "версіонування — v1 лишається незмінною для старих клієнтів, поки v2 " +
+            "вносить структурну зміну відповіді.";
+        return Task.CompletedTask;
+    });
+
+    options.ShouldInclude = apiDescription => apiDescription.GroupName is null or "v2";
+});
 var app = builder.Build();
-
+app.UseMiddleware<DocAccessMiddleware>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "ProductCatalog v1");
+    });
 }
 
 app.Use(async (context, next) =>
@@ -36,7 +75,7 @@ app.Use(async (context, next) =>
 
 app.UseAuthorization();
 
-app.MapControllers();
+//app.MapControllers();
 
 app.Run();
 // Task 7 Пусте тіло

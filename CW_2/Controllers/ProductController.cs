@@ -6,16 +6,22 @@ namespace CW_2.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [ApiExplorerSettings(GroupName = "v1")]
+    [Tags("Products")]
     public class ProductController : ControllerBase
     {
+
         private readonly ProductService _productService;
 
         public ProductController(ProductService productService) {
             _productService = productService;
         }
-
+        /// <summary>Повертає список товарів з опційним фільтром і сортуванням.</summary>
+        /// <param name="category">Фільтр за категорією (точний збіг, чутливо до регістру).</param>
+        /// <param name="minPrice">Мінімальна ціна товару.</param>
+        /// <param name="sortBy">Сортування: "price" (за ціною) або "name" (за назвою).</param>
+        /// <returns>Список товарів, що відповідають фільтрам.</returns>
         [HttpGet]
-
         public ActionResult<IReadOnlyCollection<Product>> GetAll(
             [FromQuery] string? category,
             [FromQuery] decimal? minPrice,

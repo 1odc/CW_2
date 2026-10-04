@@ -82,7 +82,7 @@ namespace CW_2.Services
         public bool Update(int id, CreateProductRequest product)
         {
             Product? existing = GetById(id);
-            if(existing == null)
+            if (existing == null)
             {
                 return false;
             }
@@ -98,6 +98,18 @@ namespace CW_2.Services
         {
             return _productsList.Where(p => p.Price >= min && p.Price <= max).ToList();
         }
+        public void Delete(int id)
+        {
+            Product? existing = GetById(id);
+            if (existing != null)
+            {
+                _productsList.Remove(existing);
+            }
+        }
+        public void Clear()
+        {
+            _productsList.Clear();
+            _nextId = 1;
+        }
     }
-
 }
