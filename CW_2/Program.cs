@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using CW_2.Models;
 using CW_2.Services;
 using Scalar.AspNetCore;
@@ -10,7 +11,8 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<ProductService>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
+builder.Services.AddControllers()
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -39,22 +41,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-// Task 7 Пусте тіло
-//{
-//    "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-//  "title": "One or more validation errors occurred.",
-//  "status": 400,
-//  "errors": {
-//        "Name": [
-//          "The Name field is required.",
-//      "The field Name must be a string with a minimum length of 1 and a maximum length of 100."
-//        ],
-//    "Price": [
-//      "Price must be greater than zero."
-//    ],
-//    "Category": [
-//      "The Category field is required."
-//    ]
-//  },
-//  "traceId": "00-9ddffa7991f44f2eae364f6e1619153b-14d99c36b80c3231-00"
-//}
+//4 Task Postman
+//POST - 201, GET - 200, PUT - 204, PATCH - 200, DELETE - 204
+//5 Task UI
+//Сваггер виглядає більш класично і старомодно. Скаляр вигдядає більш сучасно і приємніше для очей, має більш зручніший інтерфейс

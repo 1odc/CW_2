@@ -2,6 +2,7 @@
 
 namespace CW_2.Models
 {
+    public enum AvailabilityStatus { InStock, LowStock, OutOfStock }
     public class Product
     {
         public int Id { get; set; }
@@ -9,7 +10,7 @@ namespace CW_2.Models
         public string Category { get; set; } = string.Empty;
         public string? Brand { get; set; }
         public decimal Price { get; set; }
-        public bool InStock { get; set; } = true;
+        public AvailabilityStatus Availability { get; set; } = AvailabilityStatus.InStock;
 
     }
     public class CreateProductRequest
@@ -23,6 +24,7 @@ namespace CW_2.Models
         public decimal Price { get; set; }
         [StringLength(50)]
         public string? Brand { get; set; }
-        public bool InStock { get; set; } = true;
+        public AvailabilityStatus Availability { get; set; } = AvailabilityStatus.InStock;
     }
+
 }

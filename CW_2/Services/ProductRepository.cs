@@ -8,7 +8,7 @@ namespace CW_2.Services
         {
             new Product { Id = 1, Name = "Миша ", Category = "Аксесуари", Price = 799m, Brand = "Logitech" },
             new Product { Id = 2, Name = "Алавіатура", Category = "Аксесуари", Price = 699m, Brand = "Logitech" },
-            new Product { Id = 3, Name = "Монітор 27\"", Category = "Периферія", Price = 6999m, Brand = "Razor", InStock = false }
+            new Product { Id = 3, Name = "Монітор 27\"", Category = "Периферія", Price = 6999m, Brand = "Razor", Availability = AvailabilityStatus.OutOfStock }
         };
         private static int _nextId = 4;
         public IReadOnlyCollection<Product> GetAll(string? category = null, decimal? minPrice = null, string? sortBy = null)
@@ -61,7 +61,7 @@ namespace CW_2.Services
         }
         public List<Product>? GetInStock()
         {
-            return _productsList.Where(p => p.InStock).ToList();
+            return _productsList.Where(p => p.Availability == AvailabilityStatus.InStock).ToList();
         }
         public List<Product>? GetBrand(string brand)
         {
@@ -90,13 +90,29 @@ namespace CW_2.Services
             existing.Category = product.Category;
             existing.Price = product.Price;
             existing.Brand = product.Brand;
-            existing.InStock = product.InStock;
+            existing.Availability = product.Availability;
             return true;
         }
 
         public List<Product> GetByPriceRange(decimal min, decimal max)
         {
             return _productsList.Where(p => p.Price >= min && p.Price <= max).ToList();
+        }
+
+        public Product? ToggleStock(int id)
+        {
+            var product = GetById(id);
+            if (product == null) return null;
+
+            product.Availability = product.Availability == AvailabilityStatus.OutOfStock
+                ? AvailabilityStatus.InStock
+                : AvailabilityStatus.OutOfStock;
+            return product;
+        }
+        public bool Delete(int id)
+        {
+            var product = GetById(id);
+            return product != null && _productsList.Remove(product);
         }
     }
 

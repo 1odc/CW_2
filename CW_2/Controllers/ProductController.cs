@@ -45,6 +45,10 @@ namespace CW_2.Controllers
         [HttpGet("price-range/{min:decimal}/{max:decimal}")]
         public ActionResult<List<Product>> GetByPriceRange(decimal min, decimal max)
         {
+            if (min > max)
+            {
+                return BadRequest(new { error = $"min ({min}) не може бути більшим за max ({max})." });
+            }
             return Ok(_productService.GetByPriceRange(min, max));
         }
         [HttpPost]
@@ -56,7 +60,7 @@ namespace CW_2.Controllers
                 Category = request.Category,
                 Price = request.Price,
                 Brand = request.Brand,
-                InStock = request.InStock
+                Availability = request.Availability
             };
             _productService.Add(product);
             return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
@@ -66,6 +70,17 @@ namespace CW_2.Controllers
         {
             bool success = _productService.Update(id, product);
             return success ? NoContent() : NotFound();
+        }
+        [HttpPatch("{id:int}/toggle-stock")]
+        public ActionResult<Product> ToggleStock(int id)
+        {
+            var product = _productService.ToggleStock(id);
+            return product == null ? NotFound() : Ok(product);
+        }
+        [HttpDelete("{id:int}")]
+        public ActionResult Delete(int id)
+        {
+            return _productService.Delete(id) ? NoContent() : NotFound();
         }
 
     }
